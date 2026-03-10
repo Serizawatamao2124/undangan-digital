@@ -559,6 +559,38 @@
             background: #003366;
         }
 
+        /* Calendar Buttons */
+        .calendar-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-calendar {
+            padding: 12px 25px;
+            background: white;
+            color: #001f3f;
+            border: 1px solid #001f3f;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .btn-calendar:hover {
+            background: #001f3f;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
         /* --- ENVELOPE ANIMATION (STIKER) --- */
         .sticker-container {
             position: fixed;
@@ -713,6 +745,19 @@
             filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
         }
 
+        /* Love Particles */
+        .love-particle {
+            position: absolute;
+            bottom: -50px;
+            opacity: 0;
+        }
+        
+        @keyframes float-love {
+            0% { transform: translateY(0) scale(0.5) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            100% { transform: translateY(-120vh) scale(1.2) rotate(360deg); opacity: 0; }
+        }
+
         /* --- DARK MODE STYLES --- */
         body.dark-mode #parallax-bg {
             filter: brightness(0.3); /* Gelapkan background gambar */
@@ -798,6 +843,17 @@
 
         body.dark-mode .wish-item strong {
             color: #D4AF37;
+        }
+
+        body.dark-mode .btn-calendar {
+            background: #252525;
+            color: #D4AF37;
+            border-color: #D4AF37;
+        }
+        
+        body.dark-mode .btn-calendar:hover {
+            background: #D4AF37;
+            color: #1a1a1a;
         }
 
         /* --- NEW ANIMATIONS (SCROLL & INTERACTIVE) --- */
@@ -1035,6 +1091,53 @@
                 gap: 0;
             }
         }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10001; /* Di atas navbar */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #lightbox.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #lightbox-img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 5px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #lightbox.visible #lightbox-img {
+            transform: scale(1);
+        }
+
+        #lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.3s;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -1062,7 +1165,7 @@
 <!-- Cover Screen -->
 <div id="cover-screen">
     <div class="cover-content">
-        <h1>Dina & Raka</h1>
+        <h1>Fia & Agung</h1>
         <p>Undangan Pernikahan</p>
         <button class="btn-open" onclick="openInvitation()">Buka Undangan</button>
     </div>
@@ -1090,7 +1193,7 @@
     <!-- kop surat -->
     <div class="letterhead reveal-on-scroll" id="home">
         <div class="city-date">
-            Yogyakarta, <strong>12 Mei 2025</strong>
+            KP.Ciaruten Udik, <strong>12 Mei 2025</strong>
         </div>
         <div class="special-title-wrapper">
             <div class="special-title">Undangan Istimewa</div>
@@ -1108,7 +1211,7 @@
     <!-- baris penerima (dinamis) -->
     <div class="to-recipient reveal-on-scroll" id="couple">
         <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #D4AF37;">Kepada Yth.</span> <br>
-        <span class="name">Bapak/Ibu/Saudara/i [Nama Tamu]</span><br>
+        <span class="name" id="guest-name">Bapak/Ibu/Saudara/i</span><br>
     </div>
 
     <!-- isi surat utama -->
@@ -1118,7 +1221,7 @@
 
     <!-- rincian acara (kartu) -->
     <div class="event-details reveal-on-scroll" id="event">
-        <h3>💞 Pernikahan Dina & Raka 💞</h3>
+        <h3>💞 Pernikahan Fia & Agung 💞</h3>
 
         <!-- Countdown Timer -->
         <div id="countdown" class="countdown-container">
@@ -1157,17 +1260,27 @@
         </div>
 
         <div class="detail-item">
-            <div class="detail-icon"><i style="font-style: normal;">📍</i></div>
+            <div class="detail-icon" onclick="copyAddress()" style="cursor: pointer;" title="Klik untuk salin alamat"><i style="font-style: normal;">📍</i></div>
             <div class="detail-text">
                 <span class="label">Tempat</span>
-                <span class="info">Gedung Agung Sanggrahan, Jl. Pura No. 15, Yogyakarta</span>
+                <span class="info" id="address-text">Desa Ciaruten udik Kecamatan Cibungbulang, Kabupaten Bogor, Jawa Barat</span>
             </div>
         </div>
 
         <!-- Peta Lokasi -->
         <div class="map-container reveal-on-scroll">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.995054628676!2d110.3637893147783!3d-7.790272979536896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a5742a17e8c33%3A0xf92dc9a55003beb0!2sGedung%20Agung%20Yogyakarta!5e0!3m2!1sid!2sid!4v1646123456789!5m2!1sid!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            <a href="https://goo.gl/maps/zQ1Z1" target="_blank" class="btn-map">📍 Buka di Google Maps</a>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.294832447913!2d106.68696937475301!3d-6.484260993503207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c25f9658a907%3A0xaf1357600259d2e!2sMasjid%20Jami%20Al-Barkah!5e0!3m2!1sid!2sid!4v1716970012345!5m2!1sid!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <a href="https://maps.app.goo.gl/pJHYrPQ7CbfnR5fS6" target="_blank" class="btn-map">📍 Buka di Google Maps</a>
+        </div>
+
+        <!-- Save to Calendar -->
+        <div class="calendar-actions reveal-on-scroll">
+            <a href="javascript:void(0)" onclick="addToGoogleCalendar()" class="btn-calendar">
+                📅 Google Calendar
+            </a>
+            <a href="javascript:void(0)" onclick="downloadICS()" class="btn-calendar">
+                🗓️ iCal / Outlook
+            </a>
         </div>
 
         <div class="detail-item">
@@ -1221,7 +1334,7 @@
         <div id="wishes-container" class="wishes-list">
             <!-- Contoh ucapan dummy -->
             <div class="wish-item">
-                <strong>Andi & Keluarga</strong>
+                <strong>Agung & Keluarga</strong>
                 <p>Selamat menempuh hidup baru! Semoga menjadi keluarga sakinah, mawaddah, warahmah. Bahagia selalu untuk kalian berdua.</p>
             </div>
         </div>
@@ -1261,6 +1374,12 @@
 </div>
 
 <!-- catatan: tidak ada interaksi server, murni statis namun representatif -->
+
+<!-- Lightbox -->
+<div id="lightbox">
+    <span id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="Gambar Galeri Ukuran Penuh">
+</div>
 
 <!-- Audio File (Ganti src dengan file musik Anda) -->
 <div id="youtube-player" style="position: fixed; top: -1000px; left: -1000px; opacity: 0; pointer-events: none;"></div>
@@ -1354,6 +1473,7 @@
                     initScrollAnimations();
                 }, 500);
                 navbar.classList.add('visible'); // Tampilkan navbar
+                startLoveAnimation();
             }, 300);
         }, 1800); // Waktu total animasi amplop
         
@@ -1414,6 +1534,37 @@
             setTimeout(() => confetti.remove(), animDuration * 1000);
         }
     }
+
+    function startLoveAnimation() {
+        const container = document.createElement('div');
+        container.id = 'love-container';
+        container.style.position = 'fixed';
+        container.style.top = '0';
+        container.style.left = '0';
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.pointerEvents = 'none';
+        container.style.zIndex = '9000'; 
+        document.body.appendChild(container);
+
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.innerHTML = Math.random() > 0.5 ? '❤️' : '💖';
+            heart.classList.add('love-particle');
+            
+            const left = Math.random() * 100;
+            const size = Math.random() * 20 + 10;
+            const duration = Math.random() * 5 + 5;
+            
+            heart.style.left = left + 'vw';
+            heart.style.fontSize = size + 'px';
+            heart.style.animation = `float-love ${duration}s linear forwards`;
+            
+            container.appendChild(heart);
+            
+            setTimeout(() => { heart.remove(); }, duration * 1000);
+        }, 1500);
+    }
     
     function startFlowerAnimation() {
         const container = document.createElement('div');
@@ -1439,6 +1590,73 @@
             setTimeout(() => { flower.remove(); }, duration * 1000);
         }, 800); // Muncul setiap 0.8 detik
     }
+
+    function copyAddress() {
+        const address = document.getElementById('address-text').innerText;
+        navigator.clipboard.writeText(address).then(() => {
+            showToast('Alamat berhasil disalin! 📋');
+        }).catch(err => {
+            console.error('Gagal menyalin: ', err);
+            showToast('Gagal menyalin alamat');
+        });
+    }
+
+    function addToGoogleCalendar() {
+        const title = "Pernikahan Fia & Agung";
+        const details = "Resepsi Pernikahan Fia & Agung. Mohon doa restu.";
+        const location = document.getElementById('address-text').innerText;
+        // 24 Mei 2025, 10:00 WIB (UTC+7) -> 03:00 UTC
+        const start = "20250524T030000Z";
+        const end = "20250524T060000Z"; // Estimasi selesai jam 13:00 WIB
+        
+        const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}&dates=${start}/${end}`;
+        window.open(url, '_blank');
+    }
+
+    function downloadICS() {
+        const title = "Pernikahan Fia & Agung";
+        const description = "Resepsi Pernikahan Fia & Agung. Mohon doa restu.";
+        const location = document.getElementById('address-text').innerText;
+        const start = "20250524T030000Z";
+        const end = "20250524T060000Z";
+
+        const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Fia Agung Wedding//EN
+BEGIN:VEVENT
+UID:${Date.now()}@fiaagungwedding.com
+DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z
+DTSTART:${start}
+DTEND:${end}
+SUMMARY:${title}
+DESCRIPTION:${description}
+LOCATION:${location}
+END:VEVENT
+END:VCALENDAR`;
+
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.setAttribute('download', 'wedding-fia-agung.ics');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function openLightbox(imgElement) {
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        // Ganti URL gambar untuk resolusi lebih tinggi
+        const highResSrc = imgElement.src.replace('w=400', 'w=1200').replace('q=80', 'q=85');
+        lightboxImg.src = highResSrc;
+        lightbox.classList.add('visible');
+    }
+
+    function closeLightbox() {
+        const lightbox = document.getElementById('lightbox');
+        lightbox.classList.remove('visible');
+    }
+
 
     function sendWish(event) {
         event.preventDefault();
@@ -1566,6 +1784,30 @@
         setTimeout(() => {
             loader.classList.add('hidden-loader');
         }, 1500); // Delay agar animasi terlihat sejenak
+
+        // Set Guest Name from URL
+        const guestNameElement = document.getElementById('guest-name');
+        const urlParams = new URLSearchParams(window.location.search);
+        const guestName = urlParams.get('to');
+
+        if (guestName) {
+            guestNameElement.textContent = decodeURIComponent(guestName.replace(/\+/g, ' '));
+        }
+
+        // Lightbox setup
+        document.querySelectorAll('.gallery-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const imgElement = item.querySelector('img');
+                openLightbox(imgElement);
+            });
+        });
+
+        document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox').addEventListener('click', (e) => {
+            if (e.target.id === 'lightbox') {
+                closeLightbox();
+            }
+        });
     });
 </script>
 
