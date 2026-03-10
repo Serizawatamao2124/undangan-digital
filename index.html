@@ -574,6 +574,12 @@
             transform: translate(-50%, -50%) scale(2);
         }
 
+        .sticker-container.slide-down {
+            transform: translate(-50%, 150%) scale(2);
+            opacity: 0;
+            transition: transform 1.5s ease-in-out, opacity 1.5s ease-in-out;
+        }
+
         .envelope-wrapper {
             position: relative;
             width: 100px;
@@ -1257,9 +1263,8 @@
 <!-- catatan: tidak ada interaksi server, murni statis namun representatif -->
 
 <!-- Audio File (Ganti src dengan file musik Anda) -->
-<audio id="bg-music" loop>
-    <source src="https://assets.mixkit.co/music/preview/mixkit-beautiful-dream-493.mp3" type="audio/mp3">
-</audio>
+<div id="youtube-player" style="position: fixed; top: -1000px; left: -1000px; opacity: 0; pointer-events: none;"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <!-- Audio Efek Suara Kertas -->
 <audio id="paper-sound">
@@ -1273,9 +1278,42 @@
 <button id="theme-toggle" onclick="toggleTheme()">🌙</button>
 
 <script>
-    const audio = document.getElementById('bg-music');
     const musicBtn = document.getElementById('music-control');
     let isPlaying = false;
+    let player;
+    let isPlayerReady = false;
+    let shouldPlay = false;
+
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('youtube-player', {
+            height: '1',
+            width: '1',
+            videoId: 'QgaTQ5-XfMM',
+            playerVars: {
+                'autoplay': 0,
+                'controls': 0,
+                'loop': 1,
+                'playlist': 'QgaTQ5-XfMM',
+                'rel': 0,
+                'showinfo': 0
+            },
+            events: {
+                'onReady': onPlayerReady
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        isPlayerReady = true;
+        event.target.setVolume(100); // Pastikan volume maksimal
+        if (shouldPlay) {
+            event.target.playVideo();
+            isPlaying = true;
+            musicBtn.style.display = 'flex';
+            document.getElementById('theme-toggle').style.display = 'flex';
+            musicBtn.classList.add('rotating');
+        }
+    }
 
     function openInvitation() {
         const cover = document.getElementById('cover-screen');
@@ -1298,11 +1336,13 @@
         setTimeout(() => {
             sticker.querySelector('.envelope-wrapper').classList.add('open');
             createConfetti();
+            sticker.classList.add('slide-down');
         }, 500);
 
         // 4. Geser layar ke atas setelah animasi selesai
         setTimeout(() => {
             sticker.classList.remove('show'); // Sembunyikan stiker
+            sticker.classList.remove('slide-down');
             cover.classList.add('hidden');    // Geser cover
             
             // Tampilkan kartu undangan
@@ -1317,27 +1357,25 @@
             }, 300);
         }, 1800); // Waktu total animasi amplop
         
+        shouldPlay = true;
+
         // Putar musik
-        audio.play().then(() => {
+        if (isPlayerReady && player) {
+            player.playVideo();
             isPlaying = true;
             musicBtn.style.display = 'flex';
-            document.getElementById('theme-toggle').style.display = 'flex'; // Pastikan tombol tema juga muncul/tetap ada
-            musicBtn.classList.add('rotating');
-        }).catch(err => {
-            console.log("Autoplay blocked", err);
-            musicBtn.style.display = 'flex';
             document.getElementById('theme-toggle').style.display = 'flex';
-            musicBtn.innerHTML = '🔇';
-        });
+            musicBtn.classList.add('rotating');
+        }
     }
 
     function toggleMusic() {
         if (isPlaying) {
-            audio.pause();
+            if (player) player.pauseVideo();
             musicBtn.classList.remove('rotating');
             musicBtn.innerHTML = '🔇';
         } else {
-            audio.play();
+            if (player) player.playVideo();
             musicBtn.classList.add('rotating');
             musicBtn.innerHTML = '🎵';
         }
