@@ -16,6 +16,10 @@
             scroll-behavior: smooth;
         }
 
+        html {
+            scroll-snap-type: y mandatory;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: transparent;
@@ -27,16 +31,16 @@
             color: #4a4a4a;
         }
 
-        /* Parallax Background */
-        #parallax-bg {
+        /* Video Background */
+        #bg-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 130vh;
-            background: #f0f4f8 url('https://images.unsplash.com/photo-1595126730973-048500087165?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+            height: 100%;
             z-index: -1;
-            will-change: transform;
+            object-fit: cover;
+            filter: brightness(0.6); /* Redupkan video agar teks terbaca */
         }
 
         /* --- COVER SCREEN (FITUR MODERN) --- */
@@ -98,47 +102,37 @@
             transform: scale(1.05);
         }
 
-        /* amplop / pembungkus surat */
-        .invitation-card {
-            max-width: 750px;
+        /* --- SLIDE LAYOUT & 3D ANIMATION --- */
+        .main-content {
             width: 100%;
-            background: #fdfbf7 url('https://www.transparenttextures.com/patterns/natural-paper.png'); /* Arpa Handmade Paper Texture */
-            background-blend-mode: multiply;
-            border-radius: 2px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2), 0 0 0 1px rgba(0,0,0,0.02); /* Deep shadow & subtle border */
-            padding: 60px 40px;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 80px 20px;
             position: relative;
-            margin: 40px 20px;
-            opacity: 0; /* Hidden initially */
-            transform: translateY(50px);
-            transition: all 1s ease 0.5s;
+            perspective: 1000px; /* Kunci efek 3D */
+            scroll-snap-align: start;
         }
 
-        /* Double Gold Border Frame */
-        .invitation-card::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            border: 1px solid #D4AF37;
-            pointer-events: none;
-        }
-        .invitation-card::after {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            pointer-events: none;
-        }
-
-        .invitation-card.visible {
-            opacity: 1;
-            transform: translateY(0);
+        /* Card Panel (Glassmorphism) */
+        .card-panel {
+            background: rgba(253, 251, 247, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            margin: 20px 0;
+            position: relative;
         }
 
         /* ornamen vintage (simulasi segel) */
@@ -216,10 +210,8 @@
             color: #1a1a1a; /* Darker text for readability on paper */
             margin: 30px 0;
             text-align: center;
-            background: none;
-            padding: 10px 30px;
-            box-shadow: none;
-            border: none;
+            padding: 0;
+            background: transparent;
         }
 
         .highlight {
@@ -228,17 +220,11 @@
         }
 
         /* detail acara */
-        .event-details {
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 4px;
-            padding: 40px;
-            margin: 40px 0;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: none;
-            position: relative;
+        .event-details-container {
+            width: 100%;
         }
 
-        .event-details::before {
+        .event-details-container::before {
             content: '✥';
             position: absolute;
             top: 10px;
@@ -246,7 +232,7 @@
             color: #D4AF37;
             font-size: 20px;
         }
-        .event-details::after {
+        .event-details-container::after {
             content: '✥';
             position: absolute;
             bottom: 10px;
@@ -255,7 +241,7 @@
             font-size: 20px;
         }
 
-        .event-details h3 {
+        .section-title {
             font-size: 3rem; /* Ukuran diperbesar */
             font-family: 'Great Vibes', cursive;
             color: #001f3f;
@@ -317,7 +303,7 @@
             flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
-            margin-top: 50px;
+            margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid #eee;
         }
@@ -365,7 +351,7 @@
 
         /* Gallery Grid */
         .gallery-section {
-            margin: 50px 0;
+            width: 100%;
             text-align: center;
         }
 
@@ -403,7 +389,7 @@
 
         /* Wishes Form */
         .wishes-section {
-            margin: 50px 0;
+            width: 100%;
             text-align: center;
         }
 
@@ -537,7 +523,7 @@
 
         /* Wedding Gift Section */
         .gift-section {
-            margin: 50px 0;
+            width: 100%;
             text-align: center;
             padding: 0 10px;
         }
@@ -822,13 +808,6 @@
             filter: brightness(0.3); /* Gelapkan background gambar */
         }
 
-        body.dark-mode .invitation-card {
-            background-color: #1a1a1a;
-            background-blend-mode: overlay;
-            color: #e0e0e0;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
-        }
-
         body.dark-mode .city-date, 
         body.dark-mode .city-date strong {
             color: #b0b0b0;
@@ -848,16 +827,16 @@
             color: #d0d0d0;
         }
 
-        body.dark-mode .event-details {
-            background: #252525;
-            border-color: #333;
+        body.dark-mode .card-panel {
+            background: rgba(30, 30, 30, 0.85);
+            border-color: #444;
         }
         
-        body.dark-mode .event-details::before, body.dark-mode .event-details::after {
+        body.dark-mode .event-details-container::before, body.dark-mode .event-details-container::after {
             opacity: 0.5;
         }
 
-        body.dark-mode .event-details h3 {
+        body.dark-mode .section-title {
             color: #D4AF37;
         }
 
@@ -922,14 +901,40 @@
         
         /* 1. Scroll Reveal Effect */
         .reveal-on-scroll {
+            /* Container animation */
+            transition: all 0.8s ease;
+            transform: scale(0.95);
             opacity: 0;
-            transform: translateY(30px);
-            transition: all 1s cubic-bezier(0.5, 0, 0, 1);
         }
+
+        .reveal-on-scroll .animate-item {
+            opacity: 0;
+            /* Default animation: from bottom */
+            transform: translate3d(0, 50px, -100px) rotateX(10deg);
+            transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* --- Animation Variations --- */
+        .reveal-on-scroll .animate-item.from-left {
+            transform: translate3d(-80px, 0, -150px) rotateY(35deg);
+        }
+        .reveal-on-scroll .animate-item.from-right {
+            transform: translate3d(80px, 0, -150px) rotateY(-35deg);
+        }
+        .reveal-on-scroll .animate-item.zoom-in {
+            transform: scale(0.7) rotateX(-15deg);
+        }
+        /* --- End Variations --- */
         
         .reveal-on-scroll.active {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1);
+        }
+
+        /* Active state for ALL animations */
+        .reveal-on-scroll.active .animate-item {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) rotateX(0) rotateY(0) scale(1);
         }
 
         /* 2. Floating Ornaments */
@@ -1125,9 +1130,8 @@
             .cover-content h1 {
                 font-size: 4.5rem; /* Ukuran disesuaikan untuk mobile */
             }
-            .invitation-card {
-                padding: 40px 20px;
-                margin: 0;
+            .slide {
+                padding: 60px 15px;
             }
             .detail-item {
                 flex-direction: row; /* Keep row on mobile for better look */
@@ -1212,8 +1216,10 @@
     <div class="loader-spinner"></div>
 </div>
 
-<!-- Parallax Background Element -->
-<div id="parallax-bg"></div>
+<!-- Video Background Element -->
+<video autoplay muted loop id="bg-video">
+    <source src="https://videos.pexels.com/video-files/3191572/3191572-hd_1920_1080_25fps.mp4" type="video/mp4">
+</video>
 
 <!-- Navbar (Menu Bawah) -->
 <nav class="navbar" id="navbar">
@@ -1249,211 +1255,235 @@
     </div>
 </div>
 
-<div class="invitation-card">
+<main class="main-content">
 
-    <!-- ornamen vintage -->
-    <div class="ornament-top reveal-on-scroll">
-        <span class="ornament-gold">⚜️</span> <span class="ornament-green">🍃</span> <span class="ornament-gold">⛰️</span> <span class="ornament-green">🍃</span> <span class="ornament-gold">⚜️</span>
-    </div>
-
-    <!-- kop surat -->
-    <div class="letterhead reveal-on-scroll" id="home">
-        <div class="city-date">
-            KP.Ciaruten Udik, <strong>12 Mei 2025</strong>
-        </div>
-        <div class="special-title-wrapper">
-            <div class="special-title">Undangan Istimewa</div>
-        </div>
-    </div>
-
-    <!-- Wax Seal & Ribbon (New Element) -->
-    <div class="wax-seal-container reveal-on-scroll">
-        <div class="ribbon-line"></div>
-        <div class="wax-seal">
-            <!-- Kelopak bunga asli di dalam wax -->
-            <span>🌸</span>
-        </div>
-    </div>
-    <!-- baris penerima (dinamis) -->
-    <div class="to-recipient reveal-on-scroll" id="couple">
-        <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #D4AF37;">Kepada Yth.</span> <br>
-        <span class="name" id="guest-name">Bapak/Ibu/Saudara/i</span><br>
-    </div>
-
-    <!-- isi surat utama -->
-    <div class="body-text reveal-on-scroll">
-        <p>Dengan memanjatkan puji syukur kehadirat Tuhan Yang Maha Esa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara <strong class="highlight">Pernikahan Putra-Putri tercinta</strong> kami yang insyaAllah akan diselenggarakan pada:</p>
-    </div>
-
-    <!-- rincian acara (kartu) -->
-    <div class="event-details reveal-on-scroll" id="event">
-        <h3>💞 Pernikahan Fia & Agung 💞</h3>
-
-        <!-- Countdown Timer -->
-        <div id="countdown" class="countdown-container">
-            <div class="time-box">
-                <span id="days" class="time-number">00</span>
-                <span class="time-label">Hari</span>
+    <!-- SLIDE 1: HOME -->
+    <section class="slide" id="home">
+        <div class="card-panel reveal-on-scroll">
+            <!-- ornamen vintage -->
+            <div class="ornament-top">
+                <span class="ornament-gold animate-item">⚜️</span> <span class="ornament-green animate-item" style="transition-delay: 0.1s">🍃</span> <span class="ornament-gold animate-item" style="transition-delay: 0.2s">⛰️</span> <span class="ornament-green animate-item" style="transition-delay: 0.3s">🍃</span> <span class="ornament-gold animate-item" style="transition-delay: 0.4s">⚜️</span>
             </div>
-            <div class="time-box">
-                <span id="hours" class="time-number">00</span>
-                <span class="time-label">Jam</span>
+
+            <!-- kop surat -->
+            <div class="letterhead">
+                <div class="city-date animate-item" style="transition-delay: 0.5s">
+                    KP.Ciaruten Udik, <strong>12 Mei 2025</strong>
+                </div>
+                <div class="special-title-wrapper animate-item" style="transition-delay: 0.6s">
+                    <div class="special-title">Undangan Istimewa</div>
+                </div>
             </div>
-            <div class="time-box">
-                <span id="minutes" class="time-number">00</span>
-                <span class="time-label">Menit</span>
-            </div>
-            <div class="time-box">
-                <span id="seconds" class="time-number">00</span>
-                <span class="time-label">Detik</span>
+
+            <!-- Wax Seal & Ribbon -->
+            <div class="wax-seal-container animate-item" style="transition-delay: 0.7s">
+                <div class="ribbon-line"></div>
+                <div class="wax-seal">
+                    <span>🌸</span>
+                </div>
             </div>
         </div>
+    </section>
 
-        <div class="detail-item">
-            <div class="detail-icon"><i style="font-style: normal;">📅</i></div>
-            <div class="detail-text">
-                <span class="label">Hari / Tanggal</span>
-                <span class="info">Sabtu, 24 Mei 2025</span>
+    <!-- SLIDE 2: COUPLE -->
+    <section class="slide" id="couple">
+        <div class="card-panel reveal-on-scroll">
+            <!-- baris penerima (dinamis) -->
+            <div class="to-recipient animate-item from-left">
+                <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; color: #D4AF37;">Kepada Yth.</span> <br>
+                <span class="name" id="guest-name">Bapak/Ibu/Saudara/i</span><br>
+            </div>
+
+            <!-- isi surat utama -->
+            <div class="body-text animate-item from-right" style="transition-delay: 0.2s">
+                <p>Dengan memanjatkan puji syukur kehadirat Tuhan Yang Maha Esa, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara <strong class="highlight">Pernikahan Putra-Putri tercinta</strong> kami yang insyaAllah akan diselenggarakan pada:</p>
             </div>
         </div>
+    </section>
 
-        <div class="detail-item">
-            <div class="detail-icon"><i style="font-style: normal;">⏰</i></div>
-            <div class="detail-text">
-                <span class="label">Pukul</span>
-                <span class="info">10.00 WIB – selesai</span>
+    <!-- SLIDE 3: EVENT -->
+    <section class="slide" id="event">
+        <div class="card-panel reveal-on-scroll event-details-container">
+            <h3 class="section-title animate-item zoom-in">💞 Pernikahan Fia & Agung 💞</h3>
+
+            <!-- Countdown Timer -->
+            <div id="countdown" class="countdown-container animate-item" style="transition-delay: 0.2s">
+                <div class="time-box">
+                    <span id="days" class="time-number">00</span>
+                    <span class="time-label">Hari</span>
+                </div>
+                <div class="time-box">
+                    <span id="hours" class="time-number">00</span>
+                    <span class="time-label">Jam</span>
+                </div>
+                <div class="time-box">
+                    <span id="minutes" class="time-number">00</span>
+                    <span class="time-label">Menit</span>
+                </div>
+                <div class="time-box">
+                    <span id="seconds" class="time-number">00</span>
+                    <span class="time-label">Detik</span>
+                </div>
+            </div>
+
+            <div class="detail-item animate-item from-left" style="transition-delay: 0.3s">
+                <div class="detail-icon"><i style="font-style: normal;">📅</i></div>
+                <div class="detail-text">
+                    <span class="label">Hari / Tanggal</span>
+                    <span class="info">Sabtu, 24 Mei 2025</span>
+                </div>
+            </div>
+
+            <div class="detail-item animate-item from-right" style="transition-delay: 0.4s">
+                <div class="detail-icon"><i style="font-style: normal;">⏰</i></div>
+                <div class="detail-text">
+                    <span class="label">Pukul</span>
+                    <span class="info">10.00 WIB – selesai</span>
+                </div>
+            </div>
+
+            <div class="detail-item animate-item from-left" style="transition-delay: 0.5s">
+                <div class="detail-icon" onclick="copyAddress()" style="cursor: pointer;" title="Klik untuk salin alamat"><i style="font-style: normal;">📍</i></div>
+                <div class="detail-text">
+                    <span class="label">Tempat</span>
+                    <span class="info" id="address-text">Desa Ciaruten udik Kecamatan Cibungbulang, Kabupaten Bogor, Jawa Barat</span>
+                </div>
+            </div>
+
+            <!-- Peta Lokasi -->
+            <div class="map-container animate-item zoom-in" style="transition-delay: 0.6s">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.294832447913!2d106.68696937475301!3d-6.484260993503207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c25f9658a907%3A0xaf1357600259d2e!2sMasjid%20Jami%20Al-Barkah!5e0!3m2!1sid!2sid!4v1716970012345!5m2!1sid!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a href="https://maps.app.goo.gl/pJHYrPQ7CbfnR5fS6" target="_blank" class="btn-map">📍 Buka di Google Maps</a>
+            </div>
+
+            <div class="detail-item animate-item from-right" style="transition-delay: 0.7s">
+                <div class="detail-icon"><i style="font-style: normal;">💍</i></div>
+                <div class="detail-text">
+                    <span class="label">Akad Nikah</span>
+                    <span class="info">08.00 - 09.30 WIB (resmi terbatas)</span>
+                </div>
+            </div>
+
+            <!-- pesan singkat -->
+            <div style="text-align: center; margin-top: 30px; font-style: italic; color: #888;" class="animate-item zoom-in" style="transition-delay: 0.8s">
+                “Merupakan suatu kehormatan dan kebahagiaan apabila Bapak/Ibu berkenan hadir.”
             </div>
         </div>
+    </section>
 
-        <div class="detail-item">
-            <div class="detail-icon" onclick="copyAddress()" style="cursor: pointer;" title="Klik untuk salin alamat"><i style="font-style: normal;">📍</i></div>
-            <div class="detail-text">
-                <span class="label">Tempat</span>
-                <span class="info" id="address-text">Desa Ciaruten udik Kecamatan Cibungbulang, Kabupaten Bogor, Jawa Barat</span>
+    <!-- SLIDE 4: GALLERY -->
+    <section class="slide" id="gallery">
+        <div class="card-panel reveal-on-scroll">
+            <div class="gallery-section">
+                <h3 class="section-title animate-item zoom-in">Galeri Prewedding</h3>
+                <div class="gallery-grid">
+                    <div class="gallery-item animate-item" style="transition-delay: 0.2s">
+                        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 1">
+                    </div>
+                    <div class="gallery-item animate-item" style="transition-delay: 0.3s">
+                        <img src="https://images.unsplash.com/photo-1511285560982-1356c11d4606?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 2">
+                    </div>
+                    <div class="gallery-item animate-item" style="transition-delay: 0.4s">
+                        <img src="https://images.unsplash.com/photo-1520854221256-17451cc330e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 3">
+                    </div>
+                    <div class="gallery-item animate-item" style="transition-delay: 0.5s">
+                        <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 4">
+                    </div>
+                    <div class="gallery-item animate-item" style="transition-delay: 0.6s">
+                        <img src="https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 5">
+                    </div>
+                    <div class="gallery-item animate-item" style="transition-delay: 0.7s">
+                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 6">
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- Peta Lokasi -->
-        <div class="map-container reveal-on-scroll">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.294832447913!2d106.68696937475301!3d-6.484260993503207!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69c25f9658a907%3A0xaf1357600259d2e!2sMasjid%20Jami%20Al-Barkah!5e0!3m2!1sid!2sid!4v1716970012345!5m2!1sid!2sid" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-            <a href="https://maps.app.goo.gl/pJHYrPQ7CbfnR5fS6" target="_blank" class="btn-map">📍 Buka di Google Maps</a>
-        </div>
+    <!-- SLIDE 5: GIFT -->
+    <section class="slide" id="gift">
+        <div class="card-panel reveal-on-scroll">
+            <div class="gift-section">
+                <h3 class="section-title animate-item zoom-in">Wedding Gift</h3>
+                <p style="margin-bottom: 30px; color: #666;" class="body-text animate-item" style="transition-delay: 0.1s">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika memberi adalah ungkapan tanda kasih Anda, kami menerima kado secara cashless.</p>
+                
+                <div class="gift-card animate-item from-left" style="transition-delay: 0.3s">
+                    <span class="bank-logo">BCA</span>
+                    <span class="account-number" id="acc-bca">1234567890</span>
+                    <span class="account-name">a.n Fia</span>
+                    <button class="btn-copy-gift" onclick="copyGiftText('acc-bca')">📋 Salin No. Rekening</button>
+                </div>
 
-        <div class="detail-item">
-            <div class="detail-icon"><i style="font-style: normal;">💍</i></div>
-            <div class="detail-text">
-                <span class="label">Akad Nikah</span>
-                <span class="info">08.00 - 09.30 WIB (resmi terbatas)</span>
+                <div class="gift-card animate-item from-right" style="transition-delay: 0.4s">
+                    <span class="bank-logo">MANDIRI</span>
+                    <span class="account-number" id="acc-mandiri">0987654321</span>
+                    <span class="account-name">a.n Agung</span>
+                    <button class="btn-copy-gift" onclick="copyGiftText('acc-mandiri')">📋 Salin No. Rekening</button>
+                </div>
+
+                <div class="gift-card animate-item from-left" style="transition-delay: 0.5s">
+                    <span class="bank-logo">QRIS</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QRIS Code" class="qris-img">
+                    <span class="account-name">Scan untuk memberikan hadiah</span>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- pesan singkat -->
-        <div style="text-align: center; margin-top: 30px; font-style: italic; color: #888;">
-            “Merupakan suatu kehormatan dan kebahagiaan apabila Bapak/Ibu berkenan hadir.”
-        </div>
-    </div>
+    <!-- SLIDE 6: WISHES & FOOTER -->
+    <section class="slide" id="wishes">
+        <div class="card-panel reveal-on-scroll">
+            <div class="wishes-section">
+                <h3 class="section-title animate-item zoom-in">Kirim Ucapan & Doa</h3>
+                <form class="wish-form animate-item" style="transition-delay: 0.2s" onsubmit="sendWish(event)">
+                    <input type="text" id="sender-name" placeholder="Nama Anda" required>
+                    <textarea id="sender-message" placeholder="Tuliskan ucapan dan doa restu..." rows="4" required></textarea>
+                    <button type="submit" class="btn-send">Kirim Ucapan</button>
+                </form>
+                
+                <div id="wishes-container" class="wishes-list animate-item from-right" style="transition-delay: 0.3s">
+                    <!-- Contoh ucapan dummy -->
+                    <div class="wish-item">
+                        <strong>Budi & Keluarga</strong>
+                        <p>Selamat menempuh hidup baru, Fia & Agung! Semoga menjadi keluarga sakinah, mawaddah, warahmah. Bahagia selalu untuk kalian berdua.</p>
+                    </div>
+                </div>
+            </div>
 
-    <!-- Galeri Prewedding -->
-    <div class="gallery-section reveal-on-scroll" id="gallery">
-        <h3>Galeri Prewedding</h3>
-        <div class="gallery-grid">
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 1">
+            <!-- penjelasan tambahan -->
+            <div class="body-text animate-item" style="margin-top: 15px; transition-delay: 0.4s">
+                <p>Acara resepsi akan dimeriahkan oleh musik gamelan dan hidangan prasmanan khas Nusantara. Kami sangat berharap kehadiran Anda untuk memberikan doa restu kepada kedua mempelai.</p>
             </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1511285560982-1356c11d4606?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 2">
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1520854221256-17451cc330e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 3">
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 4">
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1529636798458-92182e662485?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 5">
-            </div>
-            <div class="gallery-item">
-                <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Foto 6">
-            </div>
-        </div>
-    </div>
 
-    <!-- Wedding Gift Section -->
-    <div class="gift-section reveal-on-scroll" id="gift">
-        <h3>Wedding Gift</h3>
-        <p style="margin-bottom: 30px; color: #666;" class="body-text">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika memberi adalah ungkapan tanda kasih Anda, kami menerima kado secara cashless.</p>
-        
-        <div class="gift-card">
-            <span class="bank-logo">BCA</span>
-            <span class="account-number" id="acc-bca">1234567890</span>
-            <span class="account-name">a.n Fia</span>
-            <button class="btn-copy-gift" onclick="copyGiftText('acc-bca')">📋 Salin No. Rekening</button>
-        </div>
+            <!-- RSVP & tanda tangan -->
+            <div class="rsvp-section animate-item" style="transition-delay: 0.5s">
+                <div class="rsvp-contact">
+                    💌 RSVP: <span>+62 812-3456-7890</span> (Sari)
+                </div>
+                <div class="signature">
+                    <div>Hormat kami,</div>
+                    <div class="sign-name">Kel. Sutrisno & Widati</div>
+                    <div style="font-size: 0.9rem;">(orang tua mempelai)</div>
+                </div>
+            </div>
 
-        <div class="gift-card">
-            <span class="bank-logo">MANDIRI</span>
-            <span class="account-number" id="acc-mandiri">0987654321</span>
-            <span class="account-name">a.n Agung</span>
-            <button class="btn-copy-gift" onclick="copyGiftText('acc-mandiri')">📋 Salin No. Rekening</button>
-        </div>
+            <!-- footer kecil -->
+            <div class="footer-note animate-item" style="transition-delay: 0.6s">
+                🌾 * * *  mohon maaf apabila ada kekurangan  * * * 🌾
+            </div>
 
-        <div class="gift-card">
-            <span class="bank-logo">QRIS</span>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/QR_code_for_mobile_English_Wikipedia.svg/1200px-QR_code_for_mobile_English_Wikipedia.svg.png" alt="QRIS Code" class="qris-img">
-            <span class="account-name">Scan untuk memberikan hadiah</span>
-        </div>
-    </div>
+            <!-- optional garis tangan -->
+            <div class="animate-item" style="text-align: center; margin-top: 30px; color: #b0b0b0; font-size: 1.5rem; opacity: 0.8; transition-delay: 0.7s"> 
+                <span>✽</span> <span>✾</span> <span>✿</span> <span>❀</span> <span>✽</span>
+            </div>
 
-    <!-- Form Ucapan & Doa -->
-    <div class="wishes-section reveal-on-scroll" id="wishes">
-        <h3>Kirim Ucapan & Doa</h3>
-        <form class="wish-form" onsubmit="sendWish(event)">
-            <input type="text" id="sender-name" placeholder="Nama Anda" required>
-            <textarea id="sender-message" placeholder="Tuliskan ucapan dan doa restu..." rows="4" required></textarea>
-            <button type="submit" class="btn-send">Kirim Ucapan</button>
-        </form>
-        
-        <div id="wishes-container" class="wishes-list">
-            <!-- Contoh ucapan dummy -->
-            <div class="wish-item">
-                <strong>Budi & Keluarga</strong>
-                <p>Selamat menempuh hidup baru, Fia & Agung! Semoga menjadi keluarga sakinah, mawaddah, warahmah. Bahagia selalu untuk kalian berdua.</p>
+            <!-- keterangan dinamis -->
+            <div style="font-size: 0.75rem; text-align: center; margin-top: 20px; color: #ccc;" class="animate-item" style="transition-delay: 0.8s">
+                * undangan ini dibuat dengan HTML & CSS — silakan ganti nama, tanggal, dan detail sesuai kebutuhan
             </div>
         </div>
-    </div>
-
-    <!-- penjelasan tambahan -->
-    <div class="body-text reveal-on-scroll" style="margin-top: 15px;">
-        <p>Acara resepsi akan dimeriahkan oleh musik gamelan dan hidangan prasmanan khas Nusantara. Kami sangat berharap kehadiran Anda untuk memberikan doa restu kepada kedua mempelai.</p>
-    </div>
-
-    <!-- RSVP & tanda tangan -->
-    <div class="rsvp-section reveal-on-scroll">
-        <div class="rsvp-contact">
-            💌 RSVP: <span>+62 812-3456-7890</span> (Sari)
-        </div>
-        <div class="signature">
-            <div>Hormat kami,</div>
-            <div class="sign-name">Kel. Sutrisno & Widati</div>
-            <div style="font-size: 0.9rem;">(orang tua mempelai)</div>
-        </div>
-    </div>
-
-    <!-- footer kecil -->
-    <div class="footer-note reveal-on-scroll">
-        🌾 * * *  mohon maaf apabila ada kekurangan  * * * 🌾
-    </div>
-
-    <!-- optional garis tangan -->
-    <div class="reveal-on-scroll" style="text-align: center; margin-top: 30px; color: #b0b0b0; font-size: 1.5rem; opacity: 0.8;"> 
-        <span>✽</span> <span>✾</span> <span>✿</span> <span>❀</span> <span>✽</span>
-    </div>
-
-    <!-- keterangan dinamis dengan sentuhan HTML (bisa diganti dengan data dari JS jika perlu) -->
-    <div style="font-size: 0.75rem; text-align: center; margin-top: 20px; color: #ccc;">
-        * undangan ini dibuat dengan HTML & CSS — silakan ganti nama, tanggal, dan detail sesuai kebutuhan
-    </div>
-</div>
+    </section>
+</main>
 
 <!-- catatan: tidak ada interaksi server, murni statis namun representatif -->
 
@@ -1470,6 +1500,11 @@
 <!-- Audio Efek Suara Kertas -->
 <audio id="paper-sound">
     <source src="https://assets.mixkit.co/sfx/preview/mixkit-paper-slide-1530.mp3" type="audio/mp3">
+</audio>
+
+<!-- Audio Efek Suara Klik Halus -->
+<audio id="snap-sound" preload="auto">
+    <source src="https://assets.mixkit.co/sfx/preview/mixkit-fast-small-pop-3018.mp3" type="audio/mp3">
 </audio>
 
 <!-- Tombol Kontrol Musik -->
@@ -1518,7 +1553,6 @@
 
     function openInvitation() {
         const cover = document.getElementById('cover-screen');
-        const card = document.querySelector('.invitation-card');
         const sticker = document.getElementById('sticker-animation');
         const coverContent = document.querySelector('.cover-content');
         const navbar = document.getElementById('navbar');
@@ -1546,14 +1580,9 @@
             sticker.classList.remove('slide-down');
             cover.classList.add('hidden');    // Geser cover
             
-            // Tampilkan kartu undangan
+            // Mulai animasi scroll
             setTimeout(() => {
-                card.classList.add('visible');
-                
-                // Mulai observe elemen untuk animasi scroll setelah kartu terbuka
-                setTimeout(() => {
-                    initScrollAnimations();
-                }, 500);
+                initScrollAnimations();
                 navbar.classList.add('visible'); // Tampilkan navbar
                 startLoveAnimation();
             }, 300);
@@ -1761,25 +1790,49 @@
 
     // Fungsi Inisialisasi Scroll Animation
     function initScrollAnimations() {
-        const observerOptions = {
+        // Observer untuk animasi elemen (logika yang sudah ada)
+        const animationObserverOptions = {
             threshold: 0.1,
             rootMargin: "0px 0px -50px 0px"
         };
 
-        const observer = new IntersectionObserver((entries) => {
+        const animationObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('active');
-                    observer.unobserve(entry.target); // Animasi hanya sekali
+                } else {
+                    entry.target.classList.remove('active');
                 }
             });
-        }, observerOptions);
+        }, animationObserverOptions);
 
         document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-            observer.observe(el);
+            animationObserver.observe(el);
+        });
+
+        // --- BARU: Observer untuk efek suara 'klik' saat slide berpindah ---
+        const snapSound = document.getElementById('snap-sound');
+        let lastPlayedSlideId = ''; // Mencegah suara diputar berulang di slide yang sama
+
+        const soundObserverOptions = {
+            threshold: 0.7 // Anggap slide "aktif" jika 70% terlihat
+        };
+
+        const soundObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // Jika slide baru masuk ke tampilan dan itu bukan slide yang terakhir diputar
+                if (entry.isIntersecting && entry.target.id !== lastPlayedSlideId) {
+                    snapSound.currentTime = 0; // Putar dari awal
+                    snapSound.play().catch(e => {}); // Mainkan suara, abaikan jika ada error (misal: interaksi user belum ada)
+                    lastPlayedSlideId = entry.target.id; // Tandai slide ini sebagai yang terakhir diputar
+                }
+            });
+        }, soundObserverOptions);
+
+        document.querySelectorAll('.slide').forEach(slide => {
+            soundObserver.observe(slide);
         });
     }
-
     // Toast Notification Function
     function showToast(message) {
         const toast = document.getElementById("toast");
@@ -1818,14 +1871,6 @@
                 behavior: 'smooth'
             });
         });
-    });
-
-    // Parallax Effect
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const parallaxBg = document.getElementById('parallax-bg');
-        // Move background slower than scroll speed
-        parallaxBg.style.transform = `translateY(-${scrolled * 0.2}px)`;
     });
 
     // Hide Loader
